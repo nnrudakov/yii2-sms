@@ -1,0 +1,12 @@
+# phpstorm project files
+/.idea
+# composer vendor dir
+/vendor
+composer.lock
+
+# codeception
+web/c3/
+tests/_output/*
+tests/_support/_generated
+codeception.yml
+tests/*e.yml
