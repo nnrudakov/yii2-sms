@@ -1,0 +1,38 @@
+{
+  "name": "nnrudakov/yii2-sms",
+  "description": "Send SMS via different services in Yii2.",
+  "keywords": [
+    "yii2",
+    "sms",
+    "gateway",
+    "beeline"
+  ],
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nikolaj Rudakov",
+      "email": "nnrudakov@gmail.com"
+    }
+  ],
+  "support": {
+    "email": "nnrudakov@gmail.com",
+    "issues": "https://github.com/nnrudakov/yii2-sms/issues",
+    "source": "https://github.com/nnrudakov/yii2-sms"
+  },
+  "type": "library",
+  "require": {
+    "php": ">=7.0",
+    "yiisoft/yii2": "~2.0.11"
+  },
+  "require-dev": {
+    "codeception/codeception": "^2.2",
+    "codeception/verify": "~0.3.1",
+    "codeception/specify": "~0.4.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "nnrudakov\\": "src/"
+    }
+  }
+}
