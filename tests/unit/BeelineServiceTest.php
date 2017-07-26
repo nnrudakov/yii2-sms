@@ -6,10 +6,10 @@ namespace tests\unit;
 
 use _generated\UnitTesterActions;
 use Codeception\Test\Unit;
-use nnrudakov\sms\services\beeline\Beeline;
 use Yii;
 use yii\base\InvalidConfigException;
 use nnrudakov\sms\services\ServiceInterface;
+use nnrudakov\sms\services\beeline\Beeline;
 use nnrudakov\sms\services\exceptions\{
     InvalidConfigException as SmsInvalidConfigException, UnauthorizedException
 };
