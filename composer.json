@@ -1,4 +1,4 @@
-{
+  {
   "name": "nnrudakov/yii2-sms",
   "description": "Send SMS via different services in Yii2.",
   "keywords": [
@@ -23,7 +23,8 @@
   "type": "library",
   "require": {
     "php": ">=7.0",
-    "yiisoft/yii2": "~2.0.11"
+    "yiisoft/yii2": "~2.0.11",
+    "guzzlehttp/guzzle": "~6.0"
   },
   "require-dev": {
     "codeception/codeception": "^2.2",
