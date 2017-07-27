@@ -36,6 +36,12 @@ class BeelineServiceTest extends Unit
      * @var string
      */
     private $phone;
+    /**
+     * @var string
+     */
+    private static $otherError = '<?xml version="1.0" encoding="UTF-8"?><output>
+<RECEIVER AGT_ID="" DATE_REPORT="" />
+<errors><error>Some error</error></errors></output>';
 
     protected function _before()
     {
@@ -88,16 +94,6 @@ class BeelineServiceTest extends Unit
         });
     }
 
-    public function testSend()
-    {
-        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
-        /** @var ServiceInterface $service */
-        $service = Yii::createObject($this->config);
-        $this->tester->expectException(UnauthorizedException::class, function () use ($service) {
-            $service->send([$this->phone], 'test');
-        });
-    }
-
     public function testMessages()
     {
         $this->tester->expectException(new SmsInvalidConfigException('Required `user` for `beeline` service.'), function () {
@@ -112,5 +108,65 @@ class BeelineServiceTest extends Unit
             unset($config['user']);
             Yii::createObject($config);
         });
+    }
+
+    public function testSend()
+    {
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
+        /** @var ServiceInterface $service */
+        $service = Yii::createObject($this->config);
+        $service->send([$this->phone], 'test message ' . mt_rand());
+        $this->assertFalse($service->hasErrors());
+    }
+
+    public function testServiceErrors()
+    {
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
+        $message = 'test message ' . mt_rand();
+
+        // invalid user
+        $user = $this->config['user'];
+        $this->config['user'] = 'wrong_user';
+        /** @var ServiceInterface $service */
+        $service = Yii::createObject($this->config);
+        $this->tester->expectException(UnauthorizedException::class, function () use ($service, $message) {
+            $service->send([$this->phone], $message);
+        });
+        $this->config['user'] = $user;
+
+        // good send
+        $service = Yii::createObject($this->config);
+        $service->send([$this->phone], $message);
+        $this->assertFalse($service->hasErrors());
+
+        // duplicate send
+        $service->send([$this->phone], $message);
+        $this->assertTrue($service->hasErrors());
+        $this->assertNotEmpty($service->getErrors());
+        
+        // invalid number
+        $service->send(['invalid_number'], $message);
+        $this->assertTrue($service->hasErrors());
+        $this->assertEquals('Неправильный номер телефона : invalid_number', $service->getErrors('invalid_number'));
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en_US';
+        $service->send(['invalid_number'], $message);
+        $this->assertTrue($service->hasErrors());
+        $this->assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
+        
+        // multiple errors
+        $service->send(['invalid_number', $this->phone], $message);
+        $this->assertTrue($service->hasErrors());
+        $this->assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
+        $this->assertEquals(
+            'You cannot send the same message to `' . $this->phone . '` during 20 minutes.',
+            $service->getErrors($this->phone)
+        );
+
+        // other errors
+        $checkErrors = new \ReflectionMethod($service, 'checkErrors');
+        $checkErrors->setAccessible(true);
+        $checkErrors->invoke($service, new \SimpleXMLElement(static::$otherError));
+        $this->assertTrue($service->hasErrors());
+        $this->assertNotEmpty($service->getErrors('otherError'));
     }
 }

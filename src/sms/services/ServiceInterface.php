@@ -46,4 +46,20 @@ interface ServiceInterface
      * @throws ServiceException when service return HTTP errors
      */
     public function send(array $phones, $message);
+
+    /**
+     * Returns has service errors.
+     *
+     * @return bool
+     */
+    public function hasErrors(): bool;
+
+    /**
+     * Return error for number or whole list.
+     *
+     * @param string $key Phone number or `otherError` for common errors.
+     *
+     * @return array|string
+     */
+    public function getErrors($key = null);
 }
