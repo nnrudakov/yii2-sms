@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+***v1.0***
+* Implement send SMS via Beeline
+
 ***v0.3***
 * Add message translations
 
