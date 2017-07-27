@@ -41,6 +41,15 @@ class Sms extends Component
     {
         parent::init();
 
+        if (!isset(Yii::$app->getI18n()->translations['sms'])) {
+            /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+            Yii::$app->getI18n()->translations['sms'] = [
+                'class'          => \yii\i18n\PhpMessageSource::class,
+                'basePath'       => __DIR__ . '/../messages',
+                'sourceLanguage' => 'en-US'
+            ];
+        }
+
         if (!$this->servicesList) {
             throw new SmsInvalidConfigException(Yii::t('sms', 'Services list cannot be empty.'));
         }

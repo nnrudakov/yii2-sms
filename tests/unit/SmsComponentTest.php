@@ -111,4 +111,20 @@ class SmsComponentTest extends Unit
             'Services list should contains only ' . ServiceInterface::class . ' objects'
         );
     }
+
+    public function testMessages()
+    {
+        $this->tester->expectException(new SmsInvalidConfigException('Services list cannot be empty.'), function () {
+            $config = $this->config;
+            unset($config['services']);
+            Yii::createObject($config);
+        });
+
+        Yii::$app->language = 'ru';
+        $this->tester->expectException(new SmsInvalidConfigException('Список сервисов не может быть пустым.'), function () {
+            $config = $this->config;
+            unset($config['services']);
+            Yii::createObject($config);
+        });
+    }
 }
