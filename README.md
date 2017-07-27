@@ -56,17 +56,18 @@ Add the following in your config:
 ...
 ```
 
-Set up message [translation](http://www.yiiframework.com/doc-2.0/guide-tutorial-i18n.html#message-translation):
+You can override message [translations](http://www.yiiframework.com/doc-2.0/guide-tutorial-i18n.html#message-translation):
 
 ```php
 ...
     'components' => [
         'i18n' => [
             'translations' => [
-                'sms' => [
-                    'class' => yii\i18n\PhpMessageSource::class,
-                    'basePath' => '@app/messages',
-                    'sourceLanguage' => 'en-US',
+                'sms' => [ // must be the same name
+                    'class'            => yii\i18n\PhpMessageSource::class,
+                    'basePath'         => '@app/messages',
+                    'sourceLanguage'   => 'ru',
+                    'forceTranslation' => true
                 ],
             ],
         ],
@@ -74,6 +75,8 @@ Set up message [translation](http://www.yiiframework.com/doc-2.0/guide-tutorial-
     ],
 ...
 ```
+
+As an example full list messages you can find in [russian](src/messages/ru/sms.php) message file.
 
 Usage
 -----

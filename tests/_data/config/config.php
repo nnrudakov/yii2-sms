@@ -23,15 +23,6 @@ $config = [
     'basePath'   => __DIR__ . '/..',
     'timeZone'   => 'Europe/Moscow',
     'components' => [
-        'i18n' => [
-            'translations' => [
-                'sms' => [
-                    'class' => yii\i18n\PhpMessageSource::class,
-                    'basePath' => '@app/messages',
-                    'sourceLanguage' => 'en-US',
-                ],
-            ],
-        ],
         'sms' => [
             'class'    => nnrudakov\sms\Sms::class,
             'services' => [

@@ -40,6 +40,12 @@ class BeelineServiceTest extends Unit
     protected function _before()
     {
         parent::_before();
+        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+        Yii::$app->getI18n()->translations['sms'] = [
+            'class'          => \yii\i18n\PhpMessageSource::class,
+            'basePath'       => codecept_root_dir() . '/src/messages',
+            'sourceLanguage' => 'en-US',
+        ];
         /** @noinspection PhpIncludeInspection */
         $config = require codecept_data_dir() . 'config/config.php';
         $this->config = $config['components']['sms']['services']['beeline'];
@@ -89,6 +95,22 @@ class BeelineServiceTest extends Unit
         $service = Yii::createObject($this->config);
         $this->tester->expectException(UnauthorizedException::class, function () use ($service) {
             $service->send([$this->phone], 'test');
+        });
+    }
+
+    public function testMessages()
+    {
+        $this->tester->expectException(new SmsInvalidConfigException('Required `user` for `beeline` service.'), function () {
+            $config = $this->config;
+            unset($config['user']);
+            Yii::createObject($config);
+        });
+
+        Yii::$app->language = 'ru';
+        $this->tester->expectException(new SmsInvalidConfigException('Параметр `user` обязателен для сервиса `beeline`.'), function () {
+            $config = $this->config;
+            unset($config['user']);
+            Yii::createObject($config);
         });
     }
 }
