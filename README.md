@@ -88,6 +88,25 @@ Once the extension is installed, simply use it in your code by:
  $service->send(['+7905XXXXXXX'], 'message');
  ```
  
+Extension may throw exceptions in critical situations or fill up internal erorrs list. 
+You can checkout errors by:
+
+```php
+ $service->hasErrors();
+ ```
+ 
+To get full errors list just call:
+
+```php
+ $service->getErrors();
+ ```
+ 
+To get error for certain phone number add number as parameter:
+
+```php
+ $service->getErrors('+7905XXXXXXX');
+ ```
+ 
 Services
 --------
 
@@ -103,4 +122,13 @@ paste credentials in service config:
         'password' => 'beeline_password'
     ]
 ...
+```
+
+Tests
+-----
+
+For tests uses [Codeception](http://codeception.com/docs/).
+
+```
+vendor/bin/codecept run unit
 ```
