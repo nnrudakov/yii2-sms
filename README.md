@@ -28,7 +28,7 @@ composer require --prefer-dist nnrudakov/yii2-sms
 or add
 
 ```
-"nnrudakov/yii2-sms": "~1.0"
+"nnrudakov/yii2-sms": "~1.0.0"
 ```
 
 to the require section of your `composer.json` file.
