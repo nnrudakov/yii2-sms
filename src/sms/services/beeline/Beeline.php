@@ -78,7 +78,7 @@ class Beeline extends BaseService
         $this->client = new Client();
     }
 
-    public function send(array $phones, $message)
+    public function send(array $phones, $message): bool
     {
         $this->clearErrors();
         $this->phones = $phones;
@@ -93,6 +93,8 @@ class Beeline extends BaseService
         }
 
         $this->request($payload);
+
+        return true;
     }
 
     /**

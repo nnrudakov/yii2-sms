@@ -115,7 +115,7 @@ class BeelineServiceTest extends Unit
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
         /** @var ServiceInterface $service */
         $service = Yii::createObject($this->config);
-        $service->send([$this->phone], 'test message ' . mt_rand());
+        $this->assertTrue($service->send([$this->phone], 'test message ' . mt_rand()));
         $this->assertFalse($service->hasErrors());
     }
 
