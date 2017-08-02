@@ -42,10 +42,12 @@ interface ServiceInterface
      *                        country code: +79051234567.
      * @param string $message Message text. 480 chars max.
      *
+     * @return bool
+     *
      * @throws UnauthorizedException when service credentials are invalid
      * @throws ServiceException when service return HTTP errors
      */
-    public function send(array $phones, $message);
+    public function send(array $phones, $message): bool;
 
     /**
      * Returns has service errors.
