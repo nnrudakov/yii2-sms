@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace nnrudakov\sms\services;
 
 use Yii;
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * Base class for other services.
@@ -18,7 +18,7 @@ use yii\base\Object;
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
  * @copyright  2017
  */
-abstract class BaseService extends Object implements ServiceInterface
+abstract class BaseService extends BaseObject implements ServiceInterface
 {
     /**
      * Common errors key;
