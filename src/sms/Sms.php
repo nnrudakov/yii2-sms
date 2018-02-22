@@ -12,7 +12,7 @@ use Yii;
 use yii\base\{Component, InvalidConfigException};
 use nnrudakov\sms\services\ServiceInterface;
 use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, InvalidParamException as SmsInvalidParamException
+    InvalidConfigException as SmsInvalidConfigException, InvalidArgumentException as SmsInvalidArgumentException
 };
 
 /**
@@ -37,6 +37,11 @@ class Sms extends Component
      */
     private $servicesList = [];
 
+    /**
+     * @inheritdoc
+     *
+     * @throws SmsInvalidConfigException
+     */
     public function init()
     {
         parent::init();
@@ -71,7 +76,7 @@ class Sms extends Component
      * @return ServiceInterface[] Instances list of {@link ServiceInterface}
      *
      * @throws InvalidConfigException when some service cannot be created
-     * @throws SmsInvalidParamException when unknown service
+     * @throws SmsInvalidArgumentException when unknown service
      */
     public function getServices(): array
     {
@@ -91,17 +96,17 @@ class Sms extends Component
      * @return ServiceInterface
      *
      * @throws InvalidConfigException when some service cannot be created
-     * @throws SmsInvalidParamException when unknown service
+     * @throws SmsInvalidArgumentException when unknown service
      */
     public function getService($id): ServiceInterface
     {
         if (!$this->hasService($id)) {
-            throw new SmsInvalidParamException(
+            throw new SmsInvalidArgumentException(
                 Yii::t('sms', 'Unknown service `{id}`.', ['id' => $id])
             );
         }
 
-        if (!is_object($this->servicesList[$id])) {
+        if (!\is_object($this->servicesList[$id])) {
             $this->servicesList[$id] = $this->createService($id, $this->servicesList[$id]);
         }
 

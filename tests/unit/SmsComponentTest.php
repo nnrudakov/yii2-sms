@@ -11,7 +11,7 @@ use yii\base\InvalidConfigException;
 use nnrudakov\sms\Sms;
 use nnrudakov\sms\services\ServiceInterface;
 use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, InvalidParamException as SmsInvalidParamException
+    InvalidConfigException as SmsInvalidConfigException, InvalidArgumentException as SmsInvalidParamException
 };
 
 /**

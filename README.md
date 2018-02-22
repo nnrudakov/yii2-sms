@@ -12,7 +12,7 @@ Requirements
 ------------
 
 * PHP >= 7.0
-* Yii2 >= 2.0.11
+* Yii2 >= 2.0.13
 
 Installation
 ------------

@@ -15,7 +15,7 @@ namespace nnrudakov\sms\services\exceptions;
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
  * @copyright  2017
  */
-class InvalidParamException extends \yii\base\InvalidParamException
+class InvalidArgumentException extends \yii\base\InvalidArgumentException
 {
     //
 }
