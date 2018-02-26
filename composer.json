@@ -23,7 +23,7 @@
   "type": "library",
   "require": {
     "php": ">=7.0",
-    "yiisoft/yii2": "~2.0.13",
+    "yiisoft/yii2": "~2.0.14",
     "guzzlehttp/guzzle": "~6.0"
   },
   "require-dev": {
