@@ -22,7 +22,7 @@
   },
   "type": "library",
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.2",
     "yiisoft/yii2": "~2.0.14",
     "guzzlehttp/guzzle": "~6.0"
   },

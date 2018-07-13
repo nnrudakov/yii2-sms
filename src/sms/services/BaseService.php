@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017. Nikolaj Rudakov
+ * Copyright (c) 2017-2018. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ use yii\base\BaseObject;
  *
  * @package    nnrudakov\sms\services
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2018
  */
 abstract class BaseService extends BaseObject implements ServiceInterface
 {
@@ -49,7 +49,7 @@ abstract class BaseService extends BaseObject implements ServiceInterface
      */
     private $errors = [];
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->serviceId = $id;
     }

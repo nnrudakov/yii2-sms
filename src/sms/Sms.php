@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017. Nikolaj Rudakov
+ * Copyright (c) 2017-2018. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -26,7 +26,7 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    nnrudakov\sms
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2018
  */
 class Sms extends Component
 {
@@ -42,7 +42,7 @@ class Sms extends Component
      *
      * @throws SmsInvalidConfigException
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -65,7 +65,7 @@ class Sms extends Component
      *
      * @param array $services A list.
      */
-    public function setServices(array $services)
+    public function setServices(array $services): void
     {
         $this->servicesList = $services;
     }
