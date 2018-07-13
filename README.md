@@ -11,7 +11,7 @@ For license information check the [LICENSE](LICENSE.md)-file.
 Requirements
 ------------
 
-* PHP >= 7.0
+* PHP >= 7.2
 * Yii2 >= 2.0.14
 
 Installation
@@ -28,7 +28,7 @@ composer require --prefer-dist nnrudakov/yii2-sms
 or add
 
 ```
-"nnrudakov/yii2-sms": "~1.0.0"
+"nnrudakov/yii2-sms": "^1.0"
 ```
 
 to the require section of your `composer.json` file.

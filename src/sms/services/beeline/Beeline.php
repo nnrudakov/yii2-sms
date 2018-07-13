@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017. Nikolaj Rudakov
+ * Copyright (c) 2017-2018. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    nnrudakov\sms\services\beeline
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2018
  *
  * @see https://beeline.amega-inform.ru/support/protocol_http.php Demo login
  */
@@ -59,7 +59,10 @@ class Beeline extends BaseService
      */
     private static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms/';
 
-    public function init()
+    /**
+     * @throws SmsInvalidConfigException
+     */
+    public function init(): void
     {
         parent::init();
 
@@ -105,7 +108,7 @@ class Beeline extends BaseService
      * @throws UnauthorizedException when service credentials are invalid
      * @throws ServiceException when service return HTTP errors
      */
-    protected function request(array $payload)
+    protected function request(array $payload): void
     {
         $payload['user'] = $this->user;
         $payload['pass'] = $this->password;
@@ -132,9 +135,9 @@ class Beeline extends BaseService
      *
      * @throws UnauthorizedException when service credentials are invalid
      */
-    protected function checkErrors(\SimpleXMLElement $response)
+    protected function checkErrors(\SimpleXMLElement $response): void
     {
-        if (!count($response->errors->children())) {
+        if (!\count($response->errors->children())) {
             return;
         }
 

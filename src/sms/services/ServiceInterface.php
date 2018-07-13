@@ -26,7 +26,7 @@ interface ServiceInterface
      *
      * @param string $id ID.
      */
-    public function setId($id);
+    public function setId($id): void;
 
     /**
      * Returns service ID.
