@@ -3,6 +3,7 @@ CHANGELOG
 
 ***v1.1***
 - Compatible with PHP 7.2
+- Set temporary link to `Beeline` gateway
 
 ***v1.0***
 - Implement send SMS via Beeline
