@@ -57,7 +57,7 @@ class Beeline extends BaseService
      *
      * @var string
      */
-    private static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms/';
+    private static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
 
     /**
      * @throws SmsInvalidConfigException
