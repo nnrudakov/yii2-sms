@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2018. Nikolaj Rudakov
+ * Copyright (c) 2017-2019. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace nnrudakov\sms\services\beeline;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 use Yii;
 use nnrudakov\sms\services\BaseService;
 use nnrudakov\sms\services\exceptions\{
@@ -22,7 +23,7 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    nnrudakov\sms\services\beeline
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2018
+ * @copyright  2017-2019
  *
  * @see https://beeline.amega-inform.ru/support/protocol_http.php Demo login
  */
@@ -44,20 +45,20 @@ class Beeline extends BaseService
      *
      * @var Client
      */
-    private $client;
+    protected $client;
     /**
      * Phone numbers to send.
      *
      * @var array
      */
-    private $phones = [];
+    protected $phones = [];
 
     /**
      * URL gateway.
      *
      * @var string
      */
-    private static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
+    protected static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
 
     /**
      * @throws SmsInvalidConfigException
@@ -113,19 +114,45 @@ class Beeline extends BaseService
         $payload['user'] = $this->user;
         $payload['pass'] = $this->password;
 
-        try {
-            $response = $this->client->post(self::$gatewayUrl, ['form_params' => $payload]);
-        } catch (\Exception $e) {
-            throw new ServiceException(500, $e->getMessage(), 0, $e);
-        }
-
-        try {
-            $data = new \SimpleXMLElement($response->getBody()->__toString());
-        } catch (\Exception $e) {
-            throw new ServiceException(500, $e->getMessage(), 0, $e);
-        }
-
+        $response = $this->getResponse(['form_params' => $payload]);
+        $data = $this->getResponseData($response);
         $this->checkErrors($data);
+    }
+
+    /**
+     * Returns query response.
+     *
+     * @param array $params Request parameters.
+     *
+     * @return ResponseInterface
+     *
+     * @throws ServiceException
+     */
+    protected function getResponse(array $params): ResponseInterface
+    {
+        try {
+            return $this->client->post(self::$gatewayUrl, $params);
+        } catch (\Exception $e) {
+            throw new ServiceException(500, $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Retunrs response data.
+     *
+     * @param ResponseInterface $response Response object.
+     *
+     * @return \SimpleXMLElement
+     *
+     * @throws ServiceException
+     */
+    protected function getResponseData(ResponseInterface $response): \SimpleXMLElement
+    {
+        try {
+            return new \SimpleXMLElement($response->getBody()->__toString());
+        } catch (\Exception $e) {
+            throw new ServiceException(500, $e->getMessage(), 0, $e);
+        }
     }
 
     /**
