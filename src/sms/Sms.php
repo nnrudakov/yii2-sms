@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2018. Nikolaj Rudakov
+ * Copyright (c) 2017-2020. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -10,10 +10,14 @@ namespace nnrudakov\sms;
 
 use Yii;
 use yii\base\{Component, InvalidConfigException};
-use nnrudakov\sms\services\ServiceInterface;
+use yii\i18n\PhpMessageSource;
 use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, InvalidArgumentException as SmsInvalidArgumentException
+    InvalidArgumentException as SmsInvalidArgumentException,
+    InvalidConfigException as SmsInvalidConfigException
 };
+use nnrudakov\sms\services\ServiceInterface;
+
+use function is_object;
 
 /**
  * Main SMS component.
@@ -26,14 +30,12 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    nnrudakov\sms
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2018
+ * @copyright  2017-2020
  */
 class Sms extends Component
 {
     /**
-     * SMS services list.
-     *
-     * @var array|ServiceInterface[]
+     * @var array|ServiceInterface[] SMS services list.
      */
     private $servicesList = [];
 
@@ -47,10 +49,9 @@ class Sms extends Component
         parent::init();
 
         if (!isset(Yii::$app->getI18n()->translations['sms'])) {
-            /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
             Yii::$app->getI18n()->translations['sms'] = [
-                'class'          => \yii\i18n\PhpMessageSource::class,
-                'basePath'       => __DIR__ . '/../messages',
+                'class' => PhpMessageSource::class,
+                'basePath' => __DIR__ . '/../messages',
                 'sourceLanguage' => 'en-US'
             ];
         }
@@ -106,7 +107,7 @@ class Sms extends Component
             );
         }
 
-        if (!\is_object($this->servicesList[$id])) {
+        if (!is_object($this->servicesList[$id])) {
             $this->servicesList[$id] = $this->createService($id, $this->servicesList[$id]);
         }
 
@@ -128,10 +129,10 @@ class Sms extends Component
     /**
      * Create a new {@link ServiceInterface} instance.
      *
-     * @param string $id     Service ID.
-     * @param array  $config Configurations.
+     * @param string $id Service ID.
+     * @param array $config Configurations.
      *
-     * @return ServiceInterface|\Object Object instance.
+     * @return ServiceInterface|Object Object instance.
      *
      * @throws InvalidConfigException when some service cannot be created
      */
