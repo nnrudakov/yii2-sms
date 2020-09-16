@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017. Nikolaj Rudakov
+ * Copyright (c) 2017-2020. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -17,7 +17,7 @@ use nnrudakov\sms\services\exceptions\{ServiceException, UnauthorizedException};
  *
  * @package    nnrudakov\sms\services
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2020
  */
 interface ServiceInterface
 {
@@ -38,7 +38,7 @@ interface ServiceInterface
     /**
      * Send SMS message.
      *
-     * @param array  $phones  Phone numbers list. Format has an open numbering plan with 10-digit phone number with
+     * @param array $phones Phone numbers list. Format has an open numbering plan with 10-digit phone number with
      *                        country code: +79051234567.
      * @param string $message Message text. 480 chars max.
      *

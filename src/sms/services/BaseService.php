@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2018. Nikolaj Rudakov
+ * Copyright (c) 2017-2020. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -16,21 +16,17 @@ use yii\base\BaseObject;
  *
  * @package    nnrudakov\sms\services
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2018
+ * @copyright  2017-2020
  */
 abstract class BaseService extends BaseObject implements ServiceInterface
 {
     /**
-     * Common errors key;
-     *
-     * @var string
+     * @var string Common errors key.
      */
     protected static $otherError = 'otherError';
 
     /**
-     * Service ID.
-     *
-     * @var string
+     * @var string Service ID.
      */
     private $serviceId;
     /**
@@ -76,10 +72,10 @@ abstract class BaseService extends BaseObject implements ServiceInterface
     /**
      * Add error to number.
      *
-     * @param string $key   Phone number or other key.
+     * @param string $key Phone number or other key.
      * @param string $error Error value.
      */
-    protected function addError($key, $error)
+    protected function addError($key, $error): void
     {
         if ($key === static::$otherError) {
             $this->errors[$key][] = $error;
@@ -98,7 +94,7 @@ abstract class BaseService extends BaseObject implements ServiceInterface
     /**
      * Clear errors list.
      */
-    protected function clearErrors()
+    protected function clearErrors(): void
     {
         $this->errors = [];
     }

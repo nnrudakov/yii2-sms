@@ -11,7 +11,7 @@ For license information check the [LICENSE](LICENSE.md)-file.
 Requirements
 ------------
 
-* PHP >= 7.2
+* PHP >= 7.3 (use v1.2.5 if you need PHP 7.2)
 * Yii2 >= 2.0.14
 
 Installation

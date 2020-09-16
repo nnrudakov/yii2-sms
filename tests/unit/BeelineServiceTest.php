@@ -6,13 +6,14 @@ namespace tests\unit;
 
 use _generated\UnitTesterActions;
 use Codeception\Test\Unit;
+use nnrudakov\sms\services\beeline\Beeline;
+use nnrudakov\sms\services\exceptions\{InvalidConfigException as SmsInvalidConfigException, UnauthorizedException};
+use nnrudakov\sms\services\ServiceInterface;
+use ReflectionMethod;
+use SimpleXMLElement;
 use Yii;
 use yii\base\InvalidConfigException;
-use nnrudakov\sms\services\ServiceInterface;
-use nnrudakov\sms\services\beeline\Beeline;
-use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, UnauthorizedException
-};
+use yii\i18n\PhpMessageSource;
 
 /**
  * Beeline service tests.
@@ -21,13 +22,19 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    tests\unit
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2020
  *
  * @group services
  * @group beeline
  */
 class BeelineServiceTest extends Unit
 {
+    /**
+     * @var string
+     */
+    private static $otherError = '<?xml version="1.0" encoding="UTF-8"?><output>
+<RECEIVER AGT_ID="" DATE_REPORT="" />
+<errors><error>Some error</error></errors></output>';
     /**
      * @var array
      */
@@ -36,31 +43,8 @@ class BeelineServiceTest extends Unit
      * @var string
      */
     private $phone;
-    /**
-     * @var string
-     */
-    private static $otherError = '<?xml version="1.0" encoding="UTF-8"?><output>
-<RECEIVER AGT_ID="" DATE_REPORT="" />
-<errors><error>Some error</error></errors></output>';
 
-    protected function _before()
-    {
-        parent::_before();
-        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-        Yii::$app->getI18n()->translations['sms'] = [
-            'class'          => \yii\i18n\PhpMessageSource::class,
-            'basePath'       => codecept_root_dir() . '/src/messages',
-            'sourceLanguage' => 'en-US',
-        ];
-        /** @noinspection PhpIncludeInspection */
-        $config = require codecept_data_dir() . 'config/config.php';
-        $this->config = $config['components']['sms']['services']['beeline'];
-        $this->config['id'] = 'beeline';
-        $this->phone = $this->config['phone'];
-        unset($this->config['phone']);
-    }
-
-    public function testCreateService()
+    public function testCreateService(): void
     {
         /** @var ServiceInterface $service */
         $service = Yii::createObject($this->config);
@@ -75,42 +59,57 @@ class BeelineServiceTest extends Unit
             'Service should be instance of ' . ServiceInterface::class
         );
 
-        $this->tester->expectException(SmsInvalidConfigException::class, function () {
-            $config = $this->config;
-            unset($config['user']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            SmsInvalidConfigException::class,
+            function () {
+                $config = $this->config;
+                unset($config['user']);
+                Yii::createObject($config);
+            }
+        );
 
-        $this->tester->expectException(SmsInvalidConfigException::class, function () {
-            $config = $this->config;
-            unset($config['password']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            SmsInvalidConfigException::class,
+            function () {
+                $config = $this->config;
+                unset($config['password']);
+                Yii::createObject($config);
+            }
+        );
 
-        $this->tester->expectException(InvalidConfigException::class, function () {
-            $config = $this->config;
-            unset($config['class']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            InvalidConfigException::class,
+            function () {
+                $config = $this->config;
+                unset($config['class']);
+                Yii::createObject($config);
+            }
+        );
     }
 
-    public function testMessages()
+    public function testMessages(): void
     {
-        $this->tester->expectException(new SmsInvalidConfigException('Required `user` for `beeline` service.'), function () {
-            $config = $this->config;
-            unset($config['user']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            new SmsInvalidConfigException('Required `user` for `beeline` service.'),
+            function () {
+                $config = $this->config;
+                unset($config['user']);
+                Yii::createObject($config);
+            }
+        );
 
         Yii::$app->language = 'ru';
-        $this->tester->expectException(new SmsInvalidConfigException('Параметр `user` обязателен для сервиса `beeline`.'), function () {
-            $config = $this->config;
-            unset($config['user']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            new SmsInvalidConfigException('Параметр `user` обязателен для сервиса `beeline`.'),
+            function () {
+                $config = $this->config;
+                unset($config['user']);
+                Yii::createObject($config);
+            }
+        );
     }
 
-    public function testSend()
+    public function testSend(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
         /** @var ServiceInterface $service */
@@ -119,7 +118,7 @@ class BeelineServiceTest extends Unit
         $this->assertFalse($service->hasErrors());
     }
 
-    public function testServiceErrors()
+    public function testServiceErrors(): void
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
         $message = 'test message ' . mt_rand();
@@ -129,9 +128,12 @@ class BeelineServiceTest extends Unit
         $this->config['user'] = 'wrong_user';
         /** @var ServiceInterface $service */
         $service = Yii::createObject($this->config);
-        $this->tester->expectException(UnauthorizedException::class, function () use ($service, $message) {
-            $service->send([$this->phone], $message);
-        });
+        $this->tester->expectThrowable(
+            UnauthorizedException::class,
+            function () use ($service, $message) {
+                $service->send([$this->phone], $message);
+            }
+        );
         $this->config['user'] = $user;
 
         // good send
@@ -143,7 +145,7 @@ class BeelineServiceTest extends Unit
         $service->send([$this->phone], $message);
         $this->assertTrue($service->hasErrors());
         $this->assertNotEmpty($service->getErrors());
-        
+
         // invalid number
         $service->send(['invalid_number'], $message);
         $this->assertTrue($service->hasErrors());
@@ -152,7 +154,7 @@ class BeelineServiceTest extends Unit
         $service->send(['invalid_number'], $message);
         $this->assertTrue($service->hasErrors());
         $this->assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
-        
+
         // multiple errors
         $service->send(['invalid_number', $this->phone], $message);
         $this->assertTrue($service->hasErrors());
@@ -163,10 +165,26 @@ class BeelineServiceTest extends Unit
         );
 
         // other errors
-        $checkErrors = new \ReflectionMethod($service, 'checkErrors');
+        $checkErrors = new ReflectionMethod($service, 'checkErrors');
         $checkErrors->setAccessible(true);
-        $checkErrors->invoke($service, new \SimpleXMLElement(static::$otherError));
+        $checkErrors->invoke($service, new SimpleXMLElement(static::$otherError));
         $this->assertTrue($service->hasErrors());
         $this->assertNotEmpty($service->getErrors('otherError'));
+    }
+
+    protected function _before(): void
+    {
+        parent::_before();
+        Yii::$app->getI18n()->translations['sms'] = [
+            'class' => PhpMessageSource::class,
+            'basePath' => codecept_root_dir() . '/src/messages',
+            'sourceLanguage' => 'en-US',
+        ];
+        /** @noinspection PhpIncludeInspection */
+        $config = require codecept_data_dir() . 'config/config.php';
+        $this->config = $config['components']['sms']['services']['beeline'];
+        $this->config['id'] = 'beeline';
+        $this->phone = $this->config['phone'];
+        unset($this->config['phone']);
     }
 }

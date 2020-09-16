@@ -6,13 +6,15 @@ namespace tests\unit;
 
 use _generated\UnitTesterActions;
 use Codeception\Test\Unit;
+use nnrudakov\sms\services\exceptions\{
+    InvalidArgumentException as SmsInvalidParamException,
+    InvalidConfigException as SmsInvalidConfigException
+};
+use nnrudakov\sms\services\ServiceInterface;
+use nnrudakov\sms\Sms;
+use ReflectionMethod;
 use Yii;
 use yii\base\InvalidConfigException;
-use nnrudakov\sms\Sms;
-use nnrudakov\sms\services\ServiceInterface;
-use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, InvalidArgumentException as SmsInvalidParamException
-};
 
 /**
  * Component tests.
@@ -21,7 +23,7 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    tests\unit
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017
+ * @copyright  2017-2020
  *
  * @group component
  */
@@ -32,16 +34,7 @@ class SmsComponentTest extends Unit
      */
     private $config;
 
-    protected function _before()
-    {
-        parent::_before();
-        /** @noinspection PhpIncludeInspection */
-        $config = require codecept_data_dir() . 'config/config.php';
-        $this->config = $config['components']['sms'];
-        unset($this->config['services']['beeline']['phone']);
-    }
-
-    public function testCreateComponent()
+    public function testCreateComponent(): void
     {
         $sms = Yii::$app->sms;
         $this->assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
@@ -49,17 +42,20 @@ class SmsComponentTest extends Unit
         $sms = Yii::createObject($this->config);
         $this->assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
 
-        $this->tester->expectException(SmsInvalidConfigException::class, function () {
-            $config = $this->config;
-            unset($config['services']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            SmsInvalidConfigException::class,
+            function () {
+                $config = $this->config;
+                unset($config['services']);
+                Yii::createObject($config);
+            }
+        );
     }
 
-    public function testCreateService()
+    public function testCreateService(): void
     {
         $sms = Yii::createObject($this->config);
-        $createService = new \ReflectionMethod($sms, 'createService');
+        $createService = new ReflectionMethod($sms, 'createService');
         $createService->setAccessible(true);
         $service = $createService->invoke($sms, 'beeline', $this->config['services']['beeline']);
         $this->assertInstanceOf(
@@ -68,14 +64,17 @@ class SmsComponentTest extends Unit
             'Service should be instance of ' . ServiceInterface::class
         );
 
-        $this->tester->expectException(InvalidConfigException::class, function () {
-            $config = $this->config;
-            unset($config['services']['beeline']['class']);
-            Yii::createObject($config['services']['beeline']);
-        });
+        $this->tester->expectThrowable(
+            InvalidConfigException::class,
+            function () {
+                $config = $this->config;
+                unset($config['services']['beeline']['class']);
+                Yii::createObject($config['services']['beeline']);
+            }
+        );
     }
 
-    public function testHasService()
+    public function testHasService(): void
     {
         /** @var Sms $sms */
         $sms = Yii::createObject($this->config);
@@ -83,13 +82,16 @@ class SmsComponentTest extends Unit
         $this->assertFalse($sms->hasService('wrong_service'));
     }
 
-    public function testGetOneService()
+    public function testGetOneService(): void
     {
         /** @var Sms $sms */
         $sms = Yii::createObject($this->config);
-        $this->tester->expectException(SmsInvalidParamException::class, function () use ($sms) {
-            $sms->getService('wrong_service');
-        });
+        $this->tester->expectThrowable(
+            SmsInvalidParamException::class,
+            function () use ($sms) {
+                $sms->getService('wrong_service');
+            }
+        );
 
         $service = $sms->getService('beeline');
         $this->assertInstanceOf(
@@ -99,7 +101,7 @@ class SmsComponentTest extends Unit
         );
     }
 
-    public function testGetServices()
+    public function testGetServices(): void
     {
         /** @var Sms $sms */
         $sms = Yii::createObject($this->config);
@@ -112,19 +114,34 @@ class SmsComponentTest extends Unit
         );
     }
 
-    public function testMessages()
+    public function testMessages(): void
     {
-        $this->tester->expectException(new SmsInvalidConfigException('Services list cannot be empty.'), function () {
-            $config = $this->config;
-            unset($config['services']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            new SmsInvalidConfigException('Services list cannot be empty.'),
+            function () {
+                $config = $this->config;
+                unset($config['services']);
+                Yii::createObject($config);
+            }
+        );
 
         Yii::$app->language = 'ru';
-        $this->tester->expectException(new SmsInvalidConfigException('Список сервисов не может быть пустым.'), function () {
-            $config = $this->config;
-            unset($config['services']);
-            Yii::createObject($config);
-        });
+        $this->tester->expectThrowable(
+            new SmsInvalidConfigException('Список сервисов не может быть пустым.'),
+            function () {
+                $config = $this->config;
+                unset($config['services']);
+                Yii::createObject($config);
+            }
+        );
+    }
+
+    protected function _before(): void
+    {
+        parent::_before();
+        /** @noinspection PhpIncludeInspection */
+        $config = require codecept_data_dir() . 'config/config.php';
+        $this->config = $config['components']['sms'];
+        unset($this->config['services']['beeline']['phone']);
     }
 }

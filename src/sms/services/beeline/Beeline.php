@@ -1,20 +1,25 @@
 <?php
 
 /**
- * Copyright (c) 2017-2019. Nikolaj Rudakov
+ * Copyright (c) 2017-2020. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
 
 namespace nnrudakov\sms\services\beeline;
 
+use Exception;
 use GuzzleHttp\Client;
-use Psr\Http\Message\ResponseInterface;
-use Yii;
 use nnrudakov\sms\services\BaseService;
-use nnrudakov\sms\services\exceptions\{
-    InvalidConfigException as SmsInvalidConfigException, ServiceException, UnauthorizedException
+use nnrudakov\sms\services\exceptions\{InvalidConfigException as SmsInvalidConfigException,
+    ServiceException,
+    UnauthorizedException
 };
+use Psr\Http\Message\ResponseInterface;
+use SimpleXMLElement;
+use Yii;
+
+use function count;
 
 /**
  * Beeline SMS gateway service.
@@ -23,44 +28,36 @@ use nnrudakov\sms\services\exceptions\{
  *
  * @package    nnrudakov\sms\services\beeline
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2019
+ * @copyright  2017-2020
  *
  * @see https://beeline.amega-inform.ru/support/protocol_http.php Demo login
  */
 class Beeline extends BaseService
 {
     /**
-     * Beeline user name.
-     *
-     * @var string
+     * @var string URL gateway.
+     */
+    protected static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
+    /**
+     * @var string Beeline user name.
      */
     public $user;
     /**
-     * Beeline user password.
+     * @var string Beeline user password.
      */
     public $password;
-
     /**
-     * HTTP request client.
-     *
-     * @var Client
+     * @var Client HTTP request client.
      */
     protected $client;
     /**
-     * Phone numbers to send.
-     *
-     * @var array
+     * @var array Phone numbers to send.
      */
     protected $phones = [];
 
     /**
-     * URL gateway.
+     * @inheritdoc
      *
-     * @var string
-     */
-    protected static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
-
-    /**
      * @throws SmsInvalidConfigException
      */
     public function init(): void
@@ -87,8 +84,8 @@ class Beeline extends BaseService
         $this->clearErrors();
         $this->phones = $phones;
         $payload = [
-            'action'  => 'post_sms',
-            'target'  => implode(',', $phones),
+            'action' => 'post_sms',
+            'target' => implode(',', $phones),
             'message' => mb_substr($message, 0, 480)
         ];
 
@@ -132,7 +129,7 @@ class Beeline extends BaseService
     {
         try {
             return $this->client->post(self::$gatewayUrl, $params);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ServiceException(500, $e->getMessage(), 0, $e);
         }
     }
@@ -142,15 +139,15 @@ class Beeline extends BaseService
      *
      * @param ResponseInterface $response Response object.
      *
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      *
      * @throws ServiceException
      */
-    protected function getResponseData(ResponseInterface $response): \SimpleXMLElement
+    protected function getResponseData(ResponseInterface $response): SimpleXMLElement
     {
         try {
-            return new \SimpleXMLElement($response->getBody()->__toString());
-        } catch (\Exception $e) {
+            return new SimpleXMLElement($response->getBody()->__toString());
+        } catch (Exception $e) {
             throw new ServiceException(500, $e->getMessage(), 0, $e);
         }
     }
@@ -158,13 +155,13 @@ class Beeline extends BaseService
     /**
      * Check errors in response and store it if found according to phone.
      *
-     * @param \SimpleXMLElement $response Service response.
+     * @param SimpleXMLElement $response Service response.
      *
      * @throws UnauthorizedException when service credentials are invalid
      */
-    protected function checkErrors(\SimpleXMLElement $response): void
+    protected function checkErrors(SimpleXMLElement $response): void
     {
-        if (!\count($response->errors->children())) {
+        if (!count($response->errors->children())) {
             return;
         }
 
@@ -172,8 +169,6 @@ class Beeline extends BaseService
             throw new UnauthorizedException(Yii::t('sms', $response->errors->error));
         }
 
-        /** @var \SimpleXMLElement $error */
-        /** @noinspection ForeachSourceInspection */
         foreach ($response->errors->children() as $error) {
             $error_str = $error->__toString();
             $found_phone = false;
