@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2020. Nikolaj Rudakov
+ * Copyright (c) 2017-2021. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -28,7 +28,7 @@ use function count;
  *
  * @package    nnrudakov\sms\services\beeline
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  *
  * @see https://beeline.amega-inform.ru/support/protocol_http.php Demo login
  */
@@ -37,23 +37,23 @@ class Beeline extends BaseService
     /**
      * @var string URL gateway.
      */
-    protected static $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
+    protected static string $gatewayUrl = 'https://beeline.amega-inform.ru/sendsms2/';
     /**
-     * @var string Beeline user name.
+     * @var string|null Beeline user name.
      */
-    public $user;
+    public ?string $user = null;
     /**
-     * @var string Beeline user password.
+     * @var string|null Beeline user password.
      */
-    public $password;
+    public ?string $password = null;
     /**
      * @var Client HTTP request client.
      */
-    protected $client;
+    protected Client $client;
     /**
      * @var array Phone numbers to send.
      */
-    protected $phones = [];
+    protected array $phones = [];
 
     /**
      * @inheritdoc
@@ -79,7 +79,7 @@ class Beeline extends BaseService
         $this->client = new Client();
     }
 
-    public function send(array $phones, $message): bool
+    public function send(array $phones, string $message): bool
     {
         $this->clearErrors();
         $this->phones = $phones;
@@ -173,7 +173,7 @@ class Beeline extends BaseService
             $error_str = $error->__toString();
             $found_phone = false;
             foreach ($this->phones as $phone) {
-                if (strpos($error_str, $phone) !== false) {
+                if (str_contains($error_str, $phone)) {
                     $found_phone = true;
                     $this->addError($phone, $error_str);
                     break;
