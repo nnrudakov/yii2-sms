@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2020. Nikolaj Rudakov
+ * Copyright (c) 2017-2021. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -16,19 +16,19 @@ use yii\base\BaseObject;
  *
  * @package    nnrudakov\sms\services
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  */
 abstract class BaseService extends BaseObject implements ServiceInterface
 {
     /**
      * @var string Common errors key.
      */
-    protected static $otherError = 'otherError';
+    protected static string $otherError = 'otherError';
 
     /**
      * @var string Service ID.
      */
-    private $serviceId;
+    private string $serviceId;
     /**
      * Errors after sending messages.
      * It looks like:
@@ -43,9 +43,9 @@ abstract class BaseService extends BaseObject implements ServiceInterface
      *
      * @var array
      */
-    private $errors = [];
+    private array $errors = [];
 
-    public function setId($id): void
+    public function setId(string $id): void
     {
         $this->serviceId = $id;
     }
@@ -60,7 +60,7 @@ abstract class BaseService extends BaseObject implements ServiceInterface
         return !empty($this->errors);
     }
 
-    public function getErrors($key = null)
+    public function getErrors(string $key = null): array|string
     {
         if ($key === null) {
             return $this->errors;
@@ -75,12 +75,12 @@ abstract class BaseService extends BaseObject implements ServiceInterface
      * @param string $key Phone number or other key.
      * @param string $error Error value.
      */
-    protected function addError($key, $error): void
+    protected function addError(string $key, string $error): void
     {
         if ($key === static::$otherError) {
             $this->errors[$key][] = $error;
         } else {
-            if (mb_strpos($error, 'с тем же текстом тому же адресату') !== false) {
+            if (str_contains($error, 'с тем же текстом тому же адресату')) {
                 $error = Yii::t(
                     'sms',
                     'You cannot send the same message to `{phone}` during 20 minutes.',
