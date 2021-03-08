@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 declare(strict_types=1);
 
 namespace tests\unit;
@@ -22,7 +24,7 @@ use yii\i18n\PhpMessageSource;
  *
  * @package    tests\unit
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  *
  * @group services
  * @group beeline
@@ -32,28 +34,28 @@ class BeelineServiceTest extends Unit
     /**
      * @var string
      */
-    private static $otherError = '<?xml version="1.0" encoding="UTF-8"?><output>
+    private static string $otherError = '<?xml version="1.0" encoding="UTF-8"?><output>
 <RECEIVER AGT_ID="" DATE_REPORT="" />
 <errors><error>Some error</error></errors></output>';
     /**
      * @var array
      */
-    private $config;
+    private array $config;
     /**
      * @var string
      */
-    private $phone;
+    private string $phone;
 
     public function testCreateService(): void
     {
         /** @var ServiceInterface $service */
         $service = Yii::createObject($this->config);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Beeline::class,
             $service,
             'Service should be instance of ' . Beeline::class
         );
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ServiceInterface::class,
             $service,
             'Service should be instance of ' . ServiceInterface::class
@@ -114,8 +116,8 @@ class BeelineServiceTest extends Unit
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ru_RU';
         /** @var ServiceInterface $service */
         $service = Yii::createObject($this->config);
-        $this->assertTrue($service->send([$this->phone], 'test message ' . mt_rand()));
-        $this->assertFalse($service->hasErrors());
+        self::assertTrue($service->send([$this->phone], 'test message ' . mt_rand()));
+        self::assertFalse($service->hasErrors());
     }
 
     public function testServiceErrors(): void
@@ -139,27 +141,27 @@ class BeelineServiceTest extends Unit
         // good send
         $service = Yii::createObject($this->config);
         $service->send([$this->phone], $message);
-        $this->assertFalse($service->hasErrors());
+        self::assertFalse($service->hasErrors());
 
         // duplicate send
         $service->send([$this->phone], $message);
-        $this->assertTrue($service->hasErrors());
-        $this->assertNotEmpty($service->getErrors());
+        self::assertTrue($service->hasErrors());
+        self::assertNotEmpty($service->getErrors());
 
         // invalid number
         $service->send(['invalid_number'], $message);
-        $this->assertTrue($service->hasErrors());
-        $this->assertEquals('Неправильный номер телефона : invalid_number', $service->getErrors('invalid_number'));
+        self::assertTrue($service->hasErrors());
+        self::assertEquals('Неправильный номер телефона : invalid_number', $service->getErrors('invalid_number'));
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en_US';
         $service->send(['invalid_number'], $message);
-        $this->assertTrue($service->hasErrors());
-        $this->assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
+        self::assertTrue($service->hasErrors());
+        self::assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
 
         // multiple errors
         $service->send(['invalid_number', $this->phone], $message);
-        $this->assertTrue($service->hasErrors());
-        $this->assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
-        $this->assertEquals(
+        self::assertTrue($service->hasErrors());
+        self::assertEquals('Invalid phone number : invalid_number', $service->getErrors('invalid_number'));
+        self::assertEquals(
             'You cannot send the same message to `' . $this->phone . '` during 20 minutes.',
             $service->getErrors($this->phone)
         );
@@ -168,8 +170,8 @@ class BeelineServiceTest extends Unit
         $checkErrors = new ReflectionMethod($service, 'checkErrors');
         $checkErrors->setAccessible(true);
         $checkErrors->invoke($service, new SimpleXMLElement(static::$otherError));
-        $this->assertTrue($service->hasErrors());
-        $this->assertNotEmpty($service->getErrors('otherError'));
+        self::assertTrue($service->hasErrors());
+        self::assertNotEmpty($service->getErrors('otherError'));
     }
 
     protected function _before(): void

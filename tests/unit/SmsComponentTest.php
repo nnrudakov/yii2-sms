@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 declare(strict_types=1);
 
 namespace tests\unit;
@@ -23,24 +25,21 @@ use yii\base\InvalidConfigException;
  *
  * @package    tests\unit
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  *
  * @group component
  */
 class SmsComponentTest extends Unit
 {
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
     public function testCreateComponent(): void
     {
         $sms = Yii::$app->sms;
-        $this->assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
+        self::assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
 
         $sms = Yii::createObject($this->config);
-        $this->assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
+        self::assertInstanceOf(Sms::class, $sms, 'Component should be instance of ' . Sms::class);
 
         $this->tester->expectThrowable(
             SmsInvalidConfigException::class,
@@ -58,7 +57,7 @@ class SmsComponentTest extends Unit
         $createService = new ReflectionMethod($sms, 'createService');
         $createService->setAccessible(true);
         $service = $createService->invoke($sms, 'beeline', $this->config['services']['beeline']);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ServiceInterface::class,
             $service,
             'Service should be instance of ' . ServiceInterface::class
@@ -78,8 +77,8 @@ class SmsComponentTest extends Unit
     {
         /** @var Sms $sms */
         $sms = Yii::createObject($this->config);
-        $this->assertTrue($sms->hasService('beeline'));
-        $this->assertFalse($sms->hasService('wrong_service'));
+        self::assertTrue($sms->hasService('beeline'));
+        self::assertFalse($sms->hasService('wrong_service'));
     }
 
     public function testGetOneService(): void
@@ -94,7 +93,7 @@ class SmsComponentTest extends Unit
         );
 
         $service = $sms->getService('beeline');
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ServiceInterface::class,
             $service,
             'Service should be instance of ' . ServiceInterface::class
@@ -106,8 +105,8 @@ class SmsComponentTest extends Unit
         /** @var Sms $sms */
         $sms = Yii::createObject($this->config);
         $services = $sms->getServices();
-        $this->assertNotEmpty($services);
-        $this->assertContainsOnlyInstancesOf(
+        self::assertNotEmpty($services);
+        self::assertContainsOnlyInstancesOf(
             ServiceInterface::class,
             $services,
             'Services list should contains only ' . ServiceInterface::class . ' objects'

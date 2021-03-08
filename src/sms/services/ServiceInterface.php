@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2017-2020. Nikolaj Rudakov
+ * Copyright (c) 2017-2021. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
@@ -17,7 +17,7 @@ use nnrudakov\sms\services\exceptions\{ServiceException, UnauthorizedException};
  *
  * @package    nnrudakov\sms\services
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  */
 interface ServiceInterface
 {
@@ -26,7 +26,7 @@ interface ServiceInterface
      *
      * @param string $id ID.
      */
-    public function setId($id): void;
+    public function setId(string $id): void;
 
     /**
      * Returns service ID.
@@ -47,7 +47,7 @@ interface ServiceInterface
      * @throws UnauthorizedException when service credentials are invalid
      * @throws ServiceException when service return HTTP errors
      */
-    public function send(array $phones, $message): bool;
+    public function send(array $phones, string $message): bool;
 
     /**
      * Returns has service errors.
@@ -59,9 +59,9 @@ interface ServiceInterface
     /**
      * Return error for number or whole list.
      *
-     * @param string $key Phone number or `otherError` for common errors.
+     * @param string|null $key Phone number or `otherError` for common errors.
      *
      * @return array|string
      */
-    public function getErrors($key = null);
+    public function getErrors(string $key = null): array|string;
 }

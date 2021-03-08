@@ -1,21 +1,20 @@
 <?php
 
 /**
- * Copyright (c) 2017-2020. Nikolaj Rudakov
+ * Copyright (c) 2017-2021. Nikolaj Rudakov
  */
 
 declare(strict_types=1);
 
 namespace nnrudakov\sms;
 
+use JetBrains\PhpStorm\Pure;
+use nnrudakov\sms\services\exceptions\{InvalidArgumentException as SmsInvalidArgumentException,
+    InvalidConfigException as SmsInvalidConfigException};
+use nnrudakov\sms\services\ServiceInterface;
 use Yii;
 use yii\base\{Component, InvalidConfigException};
 use yii\i18n\PhpMessageSource;
-use nnrudakov\sms\services\exceptions\{
-    InvalidArgumentException as SmsInvalidArgumentException,
-    InvalidConfigException as SmsInvalidConfigException
-};
-use nnrudakov\sms\services\ServiceInterface;
 
 use function is_object;
 
@@ -30,14 +29,14 @@ use function is_object;
  *
  * @package    nnrudakov\sms
  * @author     Nikolay Rudakov <nnrudakov@gmail.com>
- * @copyright  2017-2020
+ * @copyright  2017-2021
  */
 class Sms extends Component
 {
     /**
      * @var array|ServiceInterface[] SMS services list.
      */
-    private $servicesList = [];
+    private array $servicesList = [];
 
     /**
      * @inheritdoc
@@ -99,7 +98,7 @@ class Sms extends Component
      * @throws InvalidConfigException when some service cannot be created
      * @throws SmsInvalidArgumentException when unknown service
      */
-    public function getService($id): ServiceInterface
+    public function getService(string $id): ServiceInterface
     {
         if (!$this->hasService($id)) {
             throw new SmsInvalidArgumentException(
@@ -121,7 +120,7 @@ class Sms extends Component
      *
      * @return bool
      */
-    public function hasService($id): bool
+    #[Pure] public function hasService(string $id): bool
     {
         return array_key_exists($id, $this->servicesList);
     }
@@ -132,11 +131,11 @@ class Sms extends Component
      * @param string $id Service ID.
      * @param array $config Configurations.
      *
-     * @return ServiceInterface|Object Object instance.
+     * @return array|object Object instance.
      *
      * @throws InvalidConfigException when some service cannot be created
      */
-    protected function createService($id, $config): ServiceInterface
+    protected function createService(string $id, array $config): array|object
     {
         $config['id'] = $id;
 
