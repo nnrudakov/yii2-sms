@@ -1,4 +1,4 @@
-  {
+{
   "name": "nnrudakov/yii2-sms",
   "description": "Send SMS via different services in Yii2.",
   "keywords": [
@@ -21,8 +21,20 @@
     "source": "https://github.com/nnrudakov/yii2-sms"
   },
   "type": "library",
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "enabled": false
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
   "require": {
-    "php": ">=7.3",
+    "php": ">=7.3 <8.0",
     "yiisoft/yii2": "~2.0.14",
     "guzzlehttp/guzzle": "~6.0"
   },
