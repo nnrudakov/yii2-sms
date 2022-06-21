@@ -11,7 +11,7 @@ For license information check the [LICENSE](LICENSE.md)-file.
 Requirements
 ------------
 
-* PHP >= 8.0 (use v1.3.1 if you need PHP earlier 8.0)
+* PHP >= 8.1 (use v1.3.1 if you need PHP earlier 8.0)
 * Yii2 >= 2.0.41
 
 Installation
