@@ -4,6 +4,7 @@ CHANGELOG
 ***v2.0***
 - Minimum PHP versions up to 8.0. If you need for earlier use [v1.3.1](https://github.com/nnrudakov/yii2-sms/releases/tag/v1.3.1) (_v2.0.0, 2021-03-08_)
 - Yii2 up to 2.0.41 (_v2.0.0, 2021-03-08_)
+- Yii2 up to 2.0.45, PHP up to 8.1 (_v2.0.1, 2022-06-21_)
 
 ***v1.3***
 - Minimum PHP versions up to 7.3. If you need for 7.2 use [v1.2.5](https://github.com/nnrudakov/yii2-sms/releases/tag/v1.2.5) (_v1.3.0, 2020-09-16_)
